@@ -70,7 +70,6 @@ router.get('/api/classify', async function(req, res, next) {
             }
           })
           .then(function (response) {
-            console.log(response)
             gore = response.data.gore.prob
             console.log(gore)
           }).then(() => {

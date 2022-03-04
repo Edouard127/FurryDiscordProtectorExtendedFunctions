@@ -4,7 +4,7 @@ const tf = require('@tensorflow/tfjs-node-gpu')
 const nsfw = require("nsfwjs")
 const axios = require('axios')
 var sightengine = require('sightengine')(process.env.API_U, process.env.API_S);
-const model_url = "https://nsfw-detector.000webhostapp.com/"
+const model_url = "http://192.168.0.63/"
 const shape_size = "299"
 
 let module_vars = { model: null };

@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
-const tf = require('@tensorflow/tfjs-node')
+const tf = require('@tensorflow/tfjs-node-gpu')
 const nsfw = require("nsfwjs")
 const axios = require('axios')
+var sightengine = require('sightengine')(process.env.API_U, process.env.API_S);
 const model_url = "https://nsfw-detector.000webhostapp.com/"
 const shape_size = "299"
 
@@ -27,7 +28,6 @@ router.get('/api/classify', async function(req, res, next) {
     console.log(req.query)
     let pic; 
     let result = {};
-    let gore
     let url = req.query.url
   
     const { model } = module_vars;
@@ -42,12 +42,12 @@ router.get('/api/classify', async function(req, res, next) {
     }
   
     try {
-        var predictions = null
+      var predictions = null
       // Image must be in tf.tensor3d format
       // you can convert image to tf.tensor3d with tf.node.decodeImage(Uint8Array,channels)
       let isImage = url.split("/")
       let imagecheck = isImage[isImage.length - 1].split(".")
-      var image
+      var image = null
         
         if(imagecheck[imagecheck.length - 1] === "png" || imagecheck[imagecheck.length - 1] === "jpg" || imagecheck[imagecheck.length - 1] === "jpeg"){
           image = await tf.node.decodeImage(pic.data, 3);
@@ -59,28 +59,12 @@ router.get('/api/classify', async function(req, res, next) {
         }
   
     
-        result = predictions;
+        let result = predictions;
         console.log(result[0]);
-          axios.get('https://api.sightengine.com/1.0/check.json', {
-            params: {
-              'url': url,
-              'models': 'gore',
-              'api_user': process.env.API_U,
-              'api_secret': process.env.API_S,
-            }
-          })
-          .then(function (response) {
-            gore = response.data.gore.prob
-            console.log(gore)
-          }).then(() => {
-            res.json({ success: true, data: result, gore})
-          })
-          .catch(function (error) {
-            // handle error
-            if (error.response) console.log(error.response.data);
-            else console.log(error.message);
-            res.json({ success: false, data: error.message})
-          })
+        let owo = await sightengine.check(['gore']).set_url(url)
+          let gore = owo.gore.prob
+          console.log(gore)
+          res.json({ success: true, data: result, gore})
          
     
     } catch (err) {

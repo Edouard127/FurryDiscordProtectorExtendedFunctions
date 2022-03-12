@@ -3,7 +3,7 @@ var router = express.Router();
 const tf = require('@tensorflow/tfjs-node-gpu')
 const nsfw = require("nsfwjs")
 const axios = require('axios')
-var sightengine = require('sightengine')(process.env.API_U, process.env.API_S);
+//var sightengine = require('sightengine')(process.env.API_U, process.env.API_S);
 const model_url = "http://192.168.0.63/"
 const shape_size = "299"
 
@@ -49,7 +49,7 @@ router.get('/api/classify', async function(req, res, next) {
       let imagecheck = isImage[isImage.length - 1].split(".")
       var image = null
         
-        if(imagecheck[imagecheck.length - 1] === "png" || imagecheck[imagecheck.length - 1] === "jpg" || imagecheck[imagecheck.length - 1] === "jpeg"){
+        if(imagecheck[imagecheck.length - 1].match(/(?:png|jpg|jpeg)/i)){
           image = await tf.node.decodeImage(pic.data, 3);
           predictions = await model.classify(image);
           }
@@ -61,10 +61,10 @@ router.get('/api/classify', async function(req, res, next) {
     
         let result = predictions;
         console.log(result[0]);
-        let owo = await sightengine.check(['gore']).set_url(url)
+        /*let owo = await sightengine.check(['gore']).set_url(url)
           let gore = owo.gore.prob
-          console.log(gore)
-          res.json({ success: true, data: result, gore})
+          console.log(gore)*/
+          res.json({ success: true, data: result })
          
     
     } catch (err) {

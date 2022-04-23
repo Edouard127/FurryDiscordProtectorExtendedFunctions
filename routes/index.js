@@ -14,6 +14,7 @@ if (!module_vars.model) {
       module_vars.model = await nsfw.load(model_url, { size: parseInt(shape_size) });
       console.info("The NSFW Model was loaded successfuly!");
     } catch (err) {
+
       console.error(err);
     }
   }
